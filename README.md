@@ -14,7 +14,7 @@ pip install WordToNumber
 ## Usage
 
 ```python
-from word_to_number import word_to_num
+from WordToNumber import word_to_num
 
 # American system
 print(word_to_num('two million five hundred thousand'))  # 2500000
