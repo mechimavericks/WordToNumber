@@ -51,3 +51,5 @@ The library provides clear error messages for:
 ## License
 
 MIT
+
+Inspire from : https://github.com/akshaynagpal/w2n
