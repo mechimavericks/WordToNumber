@@ -1,5 +1,5 @@
 import unittest
-from WordToNumber import word_to_number as word_to_num  # Assuming your module is named word_to_num.py
+from WordToNumber import word_to_num  # Assuming your module is named word_to_num.py
 
 class TestWordToNum(unittest.TestCase):
     """Test cases for word_to_num function."""
