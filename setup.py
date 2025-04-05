@@ -19,7 +19,7 @@ setup(
         "Operating System :: OS Independent", 
         "Intended Audience :: Developers",
         "Natural Language :: English",
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Topic :: Software Development :: Libraries :: Python Modules",
        
