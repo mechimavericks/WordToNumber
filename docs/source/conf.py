@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # sys.modules['some_module'] = mock.Mock()
 
 project = 'WordToNumber'
-copyright = '2025, Santosh Bhandari'
+copyright = '2025, Mechi Mavericks'
 author = 'Santosh Bhandari'
 release = '1.0.2'
 
