@@ -1,5 +1,10 @@
 from __future__ import print_function
 
+"""
+A module for converting textual number representations to numeric values.
+Supports both American (billion/million/thousand) and Indian (arba/crore/lakh/thousand) 
+number systems, as well as decimal numbers specified with 'point'.
+"""
 
 american_number_system = {
     'zero': 0,
@@ -38,18 +43,31 @@ american_number_system = {
     'lakh': 100000,
     'lakhs': 100000,
     'crore': 10000000,
-    'arba': 1000000000,  # Adding arba (1 billion)
+    'arba': 1000000000,
     'point': '.'
 }
 
 decimal_words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
 
 
-"""
-function to form numeric multipliers for million, billion, thousand etc.
 
-input: list of strings
-return value: integer
+"""
+Forms numeric values from a sequence of number words by applying 
+appropriate multiplication and addition rules.
+
+Examples:
+- ["one", "hundred"] -> 1 * 100 = 100
+- ["twenty", "five"] -> 20 + 5 = 25
+- ["three", "hundred", "forty", "two"] -> 3 * 100 + 40 + 2 = 342
+
+Args:
+    number_words (list): List of strings representing number words
+
+Returns:
+    int: Calculated numeric value of the number words
+
+Note: Handles various combinations of 2, 3, and 4 number words with special
+logic for handling multipliers like 'hundred'.
 """
 
 
@@ -57,6 +75,11 @@ def number_formation(number_words):
     numbers = []
     for number_word in number_words:
         numbers.append(american_number_system[number_word])
+    
+    # Check for invalid number words
+    if not numbers:
+        return 0
+
     if len(numbers) == 4:
         return (numbers[0] * numbers[1]) + numbers[2] + numbers[3]
     elif len(numbers) == 3:
@@ -69,35 +92,63 @@ def number_formation(number_words):
     else:
         return numbers[0]
 
-
 """
-function to convert post decimal digit words to numerial digits
-input: list of strings
-output: double
-"""
+Converts decimal word representations to their numeric equivalent.
+Only words from 'zero' to 'nine' are valid after the decimal point.
 
+Args:
+    decimal_digit_words (list): List of words representing decimal digits
+
+Returns:
+    float: The decimal portion as a float (e.g., ["five", "two"] becomes 0.52)
+
+Raises:
+    ValueError: If any invalid decimal words are found
+"""
 
 def get_decimal_sum(decimal_digit_words):
     decimal_number_str = []
+    invalid_decimals = []
+    
     for dec_word in decimal_digit_words:
-        if(dec_word not in decimal_words):
-            return 0
-        else:
-            decimal_number_str.append(american_number_system[dec_word])
-    final_decimal_string = '0.' + ''.join(map(str,decimal_number_str))
+        if dec_word not in decimal_words:
+            invalid_decimals.append(dec_word)
+    
+    if invalid_decimals:
+        error_msg = f"Invalid decimal digits found: {', '.join(invalid_decimals)}. Only words from 'zero' to 'nine' are allowed after 'point'."
+        raise ValueError(error_msg)
+            
+    for dec_word in decimal_digit_words:
+        decimal_number_str.append(american_number_system[dec_word])
+        
+    final_decimal_string = '0.' + ''.join(map(str, decimal_number_str))
     return float(final_decimal_string)
 
-
 """
-function to return integer for an input `number_sentence` string
-input: string
-output: int or double or None
+Converts a textual number representation to its numerical value.
+Supports both American and Indian number systems, handling complex phrases.
+
+Features:
+- Converts phrases like "twenty three thousand and forty nine" to 23049
+- Supports decimal numbers with "point" (e.g., "five point two")
+- Validates number word ordering and consistency
+- Handles both American (billion/million/thousand) and Indian (arba/crore/lakh) number systems
+- Provides detailed error messages for invalid inputs
+
+Args:
+    number_sentence (str): A string containing the textual representation of a number
+
+Returns:
+    int or float: The numeric value of the input text (float if decimal, int otherwise)
+
+Raises:
+    ValueError: For invalid inputs, with specific error messages explaining the problem
 """
 
 
 def word_to_num(number_sentence):
     if type(number_sentence) is not str:
-        raise ValueError("Type of input is not string! Please enter a valid number word (eg. \'two million twenty three thousand and forty nine\')")
+        raise ValueError("Type of input is not string! Please enter a valid number word (e.g., 'two million twenty three thousand and forty nine')")
 
     number_sentence = number_sentence.replace('-', ' ')
     number_sentence = number_sentence.lower()  # converting input to lowercase
@@ -108,67 +159,117 @@ def word_to_num(number_sentence):
     split_words = number_sentence.strip().split()  # strip extra spaces and split sentence into words
 
     clean_numbers = []
-    clean_decimal_numbers = []
-
-    # removing and, & etc.
+    invalid_words = []
     for word in split_words:
         if word in american_number_system:
             clean_numbers.append(word)
+        elif word not in ['and', '&', ',', 'the']:  # Common words to ignore
+            invalid_words.append(word)
 
-    # Error message if the user enters invalid input!
+    # Error message if the user enters invalid input with details on which words were invalid
     if len(clean_numbers) == 0:
-        raise ValueError("No valid number words found! Please enter a valid number word (eg. two million twenty three thousand and forty nine)") 
+        if invalid_words:
+            error_msg = f"No valid number words found! Invalid words: {', '.join(invalid_words)}. Please enter valid number words."
+        else:
+            error_msg = "No valid number words found! Please enter a valid number word (e.g., 'two million twenty three thousand and forty nine')"
+        raise ValueError(error_msg)
+    
+    if invalid_words:
+        print(f"Warning: Ignoring invalid words: {', '.join(invalid_words)}")
 
-    # Error if user enters million,billion, thousand or decimal point twice
-    if clean_numbers.count('thousand') > 1 or clean_numbers.count('million') > 1 or clean_numbers.count('billion') > 1 or clean_numbers.count('arba') > 1 or clean_numbers.count('point')> 1:
-        raise ValueError("Redundant number word! Please enter a valid number word (eg. two million twenty three thousand and forty nine)")
+    clean_decimal_numbers = []
+
+    # Check for redundant number words and provide specific feedback
+    redundant_terms = []
+    for term in ['thousand', 'million', 'billion', 'arba', 'crore', 'lakh', 'lac', 'lakhs', 'point']:
+        count = clean_numbers.count(term)
+        if count > 1:
+            redundant_terms.append(f"'{term}' (appears {count} times)")
+    
+    if redundant_terms:
+        error_msg = f"Redundant number words found: {', '.join(redundant_terms)}. Each denomination should appear only once."
+        raise ValueError(error_msg)
 
     # separate decimal part of number (if exists)
     if clean_numbers.count('point') == 1:
-        clean_decimal_numbers = clean_numbers[clean_numbers.index('point')+1:]
-        clean_numbers = clean_numbers[:clean_numbers.index('point')]
+        point_index = clean_numbers.index('point')
+        if point_index == len(clean_numbers) - 1:
+            raise ValueError("'point' appears at the end with no decimal digits following it. Please specify decimal digits (e.g., 'point five').")
+        clean_decimal_numbers = clean_numbers[point_index+1:]
+        clean_numbers = clean_numbers[:point_index]
 
     billion_index = clean_numbers.index('billion') if 'billion' in clean_numbers else -1
     million_index = clean_numbers.index('million') if 'million' in clean_numbers else -1
     thousand_index = clean_numbers.index('thousand') if 'thousand' in clean_numbers else -1
     
-    # Fix: proper checking for lakh/lac/lakhs
+    # Check for lakh/lac/lakhs
     lakh_index = -1
+    lakh_term_used = None
     for lakh_word in ['lakh', 'lac', 'lakhs']:
         if lakh_word in clean_numbers:
             lakh_index = clean_numbers.index(lakh_word)
+            lakh_term_used = lakh_word
             break
             
     crore_index = clean_numbers.index('crore') if 'crore' in clean_numbers else -1
     arba_index = clean_numbers.index('arba') if 'arba' in clean_numbers else -1
 
-    # Check for valid number word order
+    # Check for valid number word order with specific error messages
     # For American system
     if billion_index > -1 and million_index > -1 and billion_index > million_index:
-        raise ValueError("Malformed number! 'billion' should come before 'million'")
+        raise ValueError("Incorrect order: 'billion' appears after 'million'. The correct order should be: 'billion' → 'million' → 'thousand'.")
     if million_index > -1 and thousand_index > -1 and million_index > thousand_index:
-        raise ValueError("Malformed number! 'million' should come before 'thousand'")
+        raise ValueError("Incorrect order: 'million' appears after 'thousand'. The correct order should be: 'billion' → 'million' → 'thousand'.")
     if billion_index > -1 and thousand_index > -1 and billion_index > thousand_index:
-        raise ValueError("Malformed number! 'billion' should come before 'thousand'")
+        raise ValueError("Incorrect order: 'billion' appears after 'thousand'. The correct order should be: 'billion' → 'million' → 'thousand'.")
         
     # For Indian/Extended system with arba
     if arba_index > -1 and crore_index > -1 and arba_index > crore_index:
-        raise ValueError("Malformed number! 'arba' should come before 'crore'")
+        raise ValueError("Incorrect order: 'arba' appears after 'crore'. The correct order should be: 'arba' → 'crore' → 'lakh' → 'thousand'.")
     if arba_index > -1 and lakh_index > -1 and arba_index > lakh_index:
-        raise ValueError("Malformed number! 'arba' should come before 'lakh'")
+        raise ValueError(f"Incorrect order: 'arba' appears after '{lakh_term_used}'. The correct order should be: 'arba' → 'crore' → 'lakh' → 'thousand'.")
     if arba_index > -1 and thousand_index > -1 and arba_index > thousand_index:
-        raise ValueError("Malformed number! 'arba' should come before 'thousand'")
+        raise ValueError("Incorrect order: 'arba' appears after 'thousand'. The correct order should be: 'arba' → 'crore' → 'lakh' → 'thousand'.")
     if crore_index > -1 and lakh_index > -1 and crore_index > lakh_index:
-        raise ValueError("Malformed number! 'crore' should come before 'lakh'")
+        raise ValueError(f"Incorrect order: 'crore' appears after '{lakh_term_used}'. The correct order should be: 'arba' → 'crore' → 'lakh' → 'thousand'.")
     if lakh_index > -1 and thousand_index > -1 and lakh_index > thousand_index:
-        raise ValueError("Malformed number! 'lakh' should come before 'thousand'")
+        raise ValueError(f"Incorrect order: '{lakh_term_used}' appears after 'thousand'. The correct order should be: 'arba' → 'crore' → 'lakh' → 'thousand'.")
     if crore_index > -1 and thousand_index > -1 and crore_index > thousand_index:
-        raise ValueError("Malformed number! 'crore' should come before 'thousand'")
+        raise ValueError("Incorrect order: 'crore' appears after 'thousand'. The correct order should be: 'arba' → 'crore' → 'lakh' → 'thousand'.")
         
     # Mixing American and Indian/Extended systems - these should be mutually exclusive
-    if (crore_index > -1 or lakh_index > -1 or arba_index > -1) and (billion_index > -1 or million_index > -1):
-        raise ValueError("Mixing American and Indian/Extended number systems is not supported! Use either arba/crore/lakh or million/billion")
+    american_terms = []
+    indian_terms = []
+    
+    if billion_index > -1:
+        american_terms.append("billion")
+    if million_index > -1:
+        american_terms.append("million")
+    if arba_index > -1:
+        indian_terms.append("arba")
+    if crore_index > -1:
+        indian_terms.append("crore")
+    if lakh_index > -1: 
+        indian_terms.append(lakh_term_used)
+        
+    if american_terms and indian_terms:
+        raise ValueError(f"Mixing number systems is not supported! Found American system terms ({', '.join(american_terms)}) mixed with Indian system terms ({', '.join(indian_terms)}). Please use either system consistently.")
 
+    # Check for missing intermediate terms between large scales
+    if billion_index > -1 and thousand_index > -1 and million_index == -1:
+        raise ValueError("Missing 'million' between 'billion' and 'thousand'. The correct hierarchy is 'billion' → 'million' → 'thousand'.")
+    
+    if arba_index > -1 and thousand_index > -1:
+        if crore_index == -1 and lakh_index == -1:
+            raise ValueError("Missing 'crore' and 'lakh' between 'arba' and 'thousand'. The correct hierarchy is 'arba' → 'crore' → 'lakh' → 'thousand'.")
+        elif crore_index == -1:
+            raise ValueError("Missing 'crore' between 'arba' and 'lakh/thousand'. The correct hierarchy is 'arba' → 'crore' → 'lakh' → 'thousand'.")
+        elif lakh_index == -1:
+            raise ValueError("Missing 'lakh' between 'crore' and 'thousand'. The correct hierarchy is 'arba' → 'crore' → 'lakh' → 'thousand'.")
+    
+    if crore_index > -1 and thousand_index > -1 and lakh_index == -1:
+        raise ValueError("Missing 'lakh' between 'crore' and 'thousand'. The correct hierarchy is 'crore' → 'lakh' → 'thousand'.")
+    
     total_sum = 0  # storing the number to be returned
 
     if len(clean_numbers) > 0:
@@ -241,27 +342,37 @@ def word_to_num(number_sentence):
                     thousand_multiplier = number_formation(clean_numbers[0:thousand_index])
                 total_sum += thousand_multiplier * 1000
 
+            # Fix for Indian system: Only add the hundreds part if there are words after the last denomination
             if thousand_index > -1 and thousand_index != len(clean_numbers)-1:
                 hundreds = number_formation(clean_numbers[thousand_index+1:])
-            elif lakh_index > -1 and lakh_index != len(clean_numbers)-1:
+                total_sum += hundreds
+            elif lakh_index > -1 and lakh_index != len(clean_numbers)-1 and thousand_index == -1:
+                # Only add if there's no thousand term (which would have been handled above)
                 hundreds = number_formation(clean_numbers[lakh_index+1:])
-            elif crore_index > -1 and crore_index != len(clean_numbers)-1:
+                total_sum += hundreds
+            elif crore_index > -1 and crore_index != len(clean_numbers)-1 and lakh_index == -1 and thousand_index == -1:
+                # Only add if there are no lakh or thousand terms (which would have been handled above)
                 hundreds = number_formation(clean_numbers[crore_index+1:])
-            elif arba_index > -1 and arba_index != len(clean_numbers)-1:
+                total_sum += hundreds
+            elif arba_index > -1 and arba_index != len(clean_numbers)-1 and crore_index == -1 and lakh_index == -1 and thousand_index == -1:
+                # Only add if there are no crore, lakh or thousand terms (which would have been handled above)
                 hundreds = number_formation(clean_numbers[arba_index+1:])
+                total_sum += hundreds
             elif thousand_index == -1 and lakh_index == -1 and crore_index == -1 and arba_index == -1:
+                # If there are no denomination terms at all, treat it as a simple number
                 hundreds = number_formation(clean_numbers)
-            else:
-                hundreds = 0
-            total_sum += hundreds
-            
+                total_sum += hundreds
+        
         # Simple numbers without any system-specific terms
         else:
             total_sum = number_formation(clean_numbers)
 
     # adding decimal part to total_sum (if exists)
     if len(clean_decimal_numbers) > 0:
-        decimal_sum = get_decimal_sum(clean_decimal_numbers)
-        total_sum += decimal_sum
+        try:
+            decimal_sum = get_decimal_sum(clean_decimal_numbers)
+            total_sum += decimal_sum
+        except ValueError as e:
+            raise ValueError(f"Error processing decimal part of '{number_sentence}': {str(e)} Please ensure decimal digits are valid words like 'one', 'two', etc.")
 
     return total_sum
