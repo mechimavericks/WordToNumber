@@ -123,8 +123,4 @@ Please review our [Code of Conduct](CodeOfConduct.md) before participating in th
 This project is licensed under the MIT [License](LICENSE).
 
 
-## Author
-
-[Santosh Bhandari](mailto:info@bhandari-santosh.com.np)
-
 ---
