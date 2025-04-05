@@ -109,7 +109,7 @@ This project builds on top of that idea by supporting **regional systems** like 
 
 ## 🤝 Contributing
 
-We welcome contributions! If you'd like to contribute to this Flutter Package Project, please check out our [Contribution Guidelines](Contribution.md).
+We welcome contributions! If you'd like to contribute to this Python Package Project, please check out our [Contribution Guidelines](Contribution.md).
 
 ---
 
