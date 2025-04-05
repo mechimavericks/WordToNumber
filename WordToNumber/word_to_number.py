@@ -38,7 +38,7 @@ american_number_system = {
     'lakh': 100000,
     'lakhs': 100000,
     'crore': 10000000,
-    'arba': 1000000000,  # Adding arba (1 billion)
+    'arba': 1000000000,
     'point': '.'
 }
 
@@ -68,14 +68,6 @@ def number_formation(number_words):
             return numbers[0] + numbers[1]
     else:
         return numbers[0]
-
-
-"""
-function to convert post decimal digit words to numerial digits
-input: list of strings
-output: double
-"""
-
 
 def get_decimal_sum(decimal_digit_words):
     decimal_number_str = []
@@ -241,20 +233,27 @@ def word_to_num(number_sentence):
                     thousand_multiplier = number_formation(clean_numbers[0:thousand_index])
                 total_sum += thousand_multiplier * 1000
 
+            # Fix for Indian system: Only add the hundreds part if there are words after the last denomination
             if thousand_index > -1 and thousand_index != len(clean_numbers)-1:
                 hundreds = number_formation(clean_numbers[thousand_index+1:])
-            elif lakh_index > -1 and lakh_index != len(clean_numbers)-1:
+                total_sum += hundreds
+            elif lakh_index > -1 and lakh_index != len(clean_numbers)-1 and thousand_index == -1:
+                # Only add if there's no thousand term (which would have been handled above)
                 hundreds = number_formation(clean_numbers[lakh_index+1:])
-            elif crore_index > -1 and crore_index != len(clean_numbers)-1:
+                total_sum += hundreds
+            elif crore_index > -1 and crore_index != len(clean_numbers)-1 and lakh_index == -1 and thousand_index == -1:
+                # Only add if there are no lakh or thousand terms (which would have been handled above)
                 hundreds = number_formation(clean_numbers[crore_index+1:])
-            elif arba_index > -1 and arba_index != len(clean_numbers)-1:
+                total_sum += hundreds
+            elif arba_index > -1 and arba_index != len(clean_numbers)-1 and crore_index == -1 and lakh_index == -1 and thousand_index == -1:
+                # Only add if there are no crore, lakh or thousand terms (which would have been handled above)
                 hundreds = number_formation(clean_numbers[arba_index+1:])
+                total_sum += hundreds
             elif thousand_index == -1 and lakh_index == -1 and crore_index == -1 and arba_index == -1:
+                # If there are no denomination terms at all, treat it as a simple number
                 hundreds = number_formation(clean_numbers)
-            else:
-                hundreds = 0
-            total_sum += hundreds
-            
+                total_sum += hundreds
+        
         # Simple numbers without any system-specific terms
         else:
             total_sum = number_formation(clean_numbers)

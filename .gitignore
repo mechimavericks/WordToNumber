@@ -4,3 +4,4 @@
 /build
 /__pycache__/
 /WordToNumber/__pycache__
+/tests/__pycache__
