@@ -1,17 +1,33 @@
-# Word to Number Converter
+# 🔢 Word to Number Converter (Multisystem: American, Indian & Nepali)
 
-A Python library to convert word representations of numbers to their numerical values. The library supports multiple number systems:
+A simple yet powerful Python package to convert number words into numeric form. Inspired by [w2n by Akshay Nagpal](https://github.com/akshaynagpal/w2n), but extended to support **Indian** and **Nepali** numbering systems such as `lakh`, `crore`, `arba`, and decimals.
 
-- American number system (million, billion)
-- Indian and Nepali number system (lakh, crore)
+---
 
-## Installation
+## ✨ Features
 
-```
+- ✅ Converts words like `five hundred twenty five` into `525`
+- ✅ Supports **American system**: `million`, `billion`, `trillion`
+- ✅ Supports **Indian/Nepali system**: `lakh`, `crore`, `arba`
+- ✅ Handles **decimal points**: `point four five` → `0.45`
+- ✅ Easy to integrate into Python applications
+
+---
+
+## 📦 Installation
+
+Install using pip:
+
+```bash
 pip install WordToNumber
 ```
+**OR**
 
-## Usage
+Just copy the `WordToNumber.py` file into your project from the Source Code.
+
+---
+
+## 🚀 Usage
 
 ```python
 from WordToNumber import word_to_num
@@ -22,34 +38,93 @@ print(word_to_num('two million five hundred thousand'))  # 2500000
 # Indian system
 print(word_to_num('two crore fifty lakh'))  # 25000000
 
-# Extended system with arba
+# Extended Nepali system with arba
 print(word_to_num('one arba two crore'))  # 1020000000
 
-# With decimals
+# Decimal numbers
 print(word_to_num('one hundred point five'))  # 100.5
 ```
 
-## Features
+---
 
-- Supports American number system: thousand, million, billion
-- Supports Indian number system: thousand, lakh/lac, crore
-- Supports extended number system with arba
-- Handles decimal numbers
-- Validates correct ordering of number words
-- Prevents mixing of different number systems
-- Processes hyphenated words and extra spaces
+## 🧠 Supported Vocabulary
 
-## Error Handling
+### 🔢 Basic Numbers:
+- `zero` to `nineteen`
+- `twenty`, `thirty`, ..., `ninety`
 
-The library provides clear error messages for:
-- Incorrect word order
-- Missing intermediary units
-- Mixing different number systems
-- Invalid input types
-- Redundant number words
+### 🧱 Place Values:
 
-## License
+#### American:
+- `hundred`, `thousand`, `million`, `billion`, `trillion`
 
-MIT
+#### Indian/Nepali:
+- `hundred`, `thousand`
+- `lakh`, `lac`, `lakhs`
+- `crore`, `arba`
 
-Inspire from : https://github.com/akshaynagpal/w2n
+#### Decimal:
+- `point`
+
+---
+<!-- 
+## ❗ Error Handling
+
+This package throws meaningful errors for:
+
+- ❌ Mixing different systems (e.g., `two million five crore`)
+- ❌ Invalid words or syntax (e.g., `fivety`, `hundred crore lakh`)
+- ❌ Repeated place values (`two million one million`)
+
+--- -->
+
+## 🧪 Function Overview
+
+### `word_to_num(number_sentence)`
+- Main function to convert a sentence into a number.
+- Returns `int` or `float`.
+
+---
+
+## 📄 Example Conversions
+
+| Input                             | Output       |
+|----------------------------------|--------------|
+| `ten thousand`                   | `10000`      |
+| `two crore fifty lakh`           | `25000000`   |
+| `one arba two crore`             | `1020000000` |
+| `one hundred point five`         | `100.5`      |
+| `seventy five lakh twenty one`   | `7500021`    |
+| `twelve point zero six seven`    | `12.067`     |
+
+---
+
+## 💡 Inspired By
+
+> [akshaynagpal/w2n](https://github.com/akshaynagpal/w2n) — A minimalistic library for word to number conversion in Python.
+
+This project builds on top of that idea by supporting **regional systems** like Indian and Nepali with added robustness and flexibility.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! If you'd like to contribute to this Flutter Package Project, please check out our [Contribution Guidelines](Contribution.md).
+
+---
+
+
+## 🤗 Code of Conduct
+Please review our [Code of Conduct](CodeOfConduct.md) before participating in this app.
+
+---
+
+## 🪪 LICENSE
+This project is licensed under the MIT [License](LICENSE).
+
+
+## Author
+
+[Santosh Bhandari](mailto:info@bhandari-santosh.com.np)
+
+---
