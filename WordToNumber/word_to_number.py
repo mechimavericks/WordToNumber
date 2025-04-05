@@ -57,6 +57,11 @@ def number_formation(number_words):
     numbers = []
     for number_word in number_words:
         numbers.append(american_number_system[number_word])
+    
+    # Check for invalid number words
+    if not numbers:
+        return 0
+
     if len(numbers) == 4:
         return (numbers[0] * numbers[1]) + numbers[2] + numbers[3]
     elif len(numbers) == 3:
@@ -196,6 +201,21 @@ def word_to_num(number_sentence):
     if american_terms and indian_terms:
         raise ValueError(f"Mixing number systems is not supported! Found American system terms ({', '.join(american_terms)}) mixed with Indian system terms ({', '.join(indian_terms)}). Please use either system consistently.")
 
+    # Check for missing intermediate terms between large scales
+    if billion_index > -1 and thousand_index > -1 and million_index == -1:
+        raise ValueError("Missing 'million' between 'billion' and 'thousand'. The correct hierarchy is 'billion' → 'million' → 'thousand'.")
+    
+    if arba_index > -1 and thousand_index > -1:
+        if crore_index == -1 and lakh_index == -1:
+            raise ValueError("Missing 'crore' and 'lakh' between 'arba' and 'thousand'. The correct hierarchy is 'arba' → 'crore' → 'lakh' → 'thousand'.")
+        elif crore_index == -1:
+            raise ValueError("Missing 'crore' between 'arba' and 'lakh/thousand'. The correct hierarchy is 'arba' → 'crore' → 'lakh' → 'thousand'.")
+        elif lakh_index == -1:
+            raise ValueError("Missing 'lakh' between 'crore' and 'thousand'. The correct hierarchy is 'arba' → 'crore' → 'lakh' → 'thousand'.")
+    
+    if crore_index > -1 and thousand_index > -1 and lakh_index == -1:
+        raise ValueError("Missing 'lakh' between 'crore' and 'thousand'. The correct hierarchy is 'crore' → 'lakh' → 'thousand'.")
+    
     total_sum = 0  # storing the number to be returned
 
     if len(clean_numbers) > 0:
