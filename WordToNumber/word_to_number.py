@@ -72,6 +72,17 @@ logic for handling multipliers like 'hundred'.
 
 
 def number_formation(number_words):
+    """
+    Converts a list of number words to a numeric value.
+    
+    Each word is mapped to its corresponding numeric value using the American numbering system.
+    The returned value is computed based on the count of words:
+     - Four words: returns (first * second) + third + fourth.
+     - Three words: returns (first * second) + third.
+     - Two words: returns the product if one value is 100; otherwise, returns their sum.
+     - One word: returns its numeric mapping.
+    If no valid words are provided, the function returns 0.
+    """
     numbers = []
     for number_word in number_words:
         numbers.append(american_number_system[number_word])
@@ -107,6 +118,12 @@ Raises:
 """
 
 def get_decimal_sum(decimal_digit_words):
+    """
+    Converts a list of decimal digit words into a float value.
+    
+    Validates that each word represents a digit (e.g., 'zero' to 'nine') and maps them to form
+    a decimal number. Raises a ValueError if any invalid words are found.
+    """
     decimal_number_str = []
     invalid_decimals = []
     
@@ -147,6 +164,25 @@ Raises:
 
 
 def word_to_num(number_sentence):
+    """
+    Converts a textual number representation into its numeric value.
+    
+    This function interprets a string containing number words using either the American or Indian
+    numbering systems, and optionally a decimal part. It normalizes input by replacing hyphens,
+    converting to lowercase, and removing extraneous words such as "and", "&", or commas. The
+    function validates the sequence and uniqueness of denomination terms (e.g., billion, million,
+    thousand, arba, crore, lakh) and raises a ValueError if the input type is incorrect, no valid
+    number words are found, if redundant or misordered terms are detected, or if mixed numbering
+    systems are used. For input strings that consist solely of digits, the function directly
+    returns the corresponding integer. If a decimal part is specified after the word "point", it is
+    converted to its fractional form and added to the final numeric result.
+    
+    Parameters:
+        number_sentence (str): A textual representation of a number (e.g., "two million twenty three thousand and forty nine").
+    
+    Returns:
+        int or float: The numeric value represented by the input.
+    """
     if type(number_sentence) is not str:
         raise ValueError("Type of input is not string! Please enter a valid number word (e.g., 'two million twenty three thousand and forty nine')")
 
