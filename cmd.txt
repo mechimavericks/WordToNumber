@@ -2,3 +2,10 @@ pip install build twine
 python -m build
 
 twine upload dist/*
+
+
+
+For Docs:
+    Need to update docs/source *.rst files to generate these html files.
+    make clean
+    make html
