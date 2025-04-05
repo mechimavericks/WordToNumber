@@ -1,5 +1,10 @@
 from __future__ import print_function
 
+"""
+A module for converting textual number representations to numeric values.
+Supports both American (billion/million/thousand) and Indian (arba/crore/lakh/thousand) 
+number systems, as well as decimal numbers specified with 'point'.
+"""
 
 american_number_system = {
     'zero': 0,
@@ -45,11 +50,24 @@ american_number_system = {
 decimal_words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
 
 
-"""
-function to form numeric multipliers for million, billion, thousand etc.
 
-input: list of strings
-return value: integer
+"""
+Forms numeric values from a sequence of number words by applying 
+appropriate multiplication and addition rules.
+
+Examples:
+- ["one", "hundred"] -> 1 * 100 = 100
+- ["twenty", "five"] -> 20 + 5 = 25
+- ["three", "hundred", "forty", "two"] -> 3 * 100 + 40 + 2 = 342
+
+Args:
+    number_words (list): List of strings representing number words
+
+Returns:
+    int: Calculated numeric value of the number words
+
+Note: Handles various combinations of 2, 3, and 4 number words with special
+logic for handling multipliers like 'hundred'.
 """
 
 
@@ -74,6 +92,20 @@ def number_formation(number_words):
     else:
         return numbers[0]
 
+"""
+Converts decimal word representations to their numeric equivalent.
+Only words from 'zero' to 'nine' are valid after the decimal point.
+
+Args:
+    decimal_digit_words (list): List of words representing decimal digits
+
+Returns:
+    float: The decimal portion as a float (e.g., ["five", "two"] becomes 0.52)
+
+Raises:
+    ValueError: If any invalid decimal words are found
+"""
+
 def get_decimal_sum(decimal_digit_words):
     decimal_number_str = []
     invalid_decimals = []
@@ -91,6 +123,28 @@ def get_decimal_sum(decimal_digit_words):
         
     final_decimal_string = '0.' + ''.join(map(str, decimal_number_str))
     return float(final_decimal_string)
+
+"""
+Converts a textual number representation to its numerical value.
+Supports both American and Indian number systems, handling complex phrases.
+
+Features:
+- Converts phrases like "twenty three thousand and forty nine" to 23049
+- Supports decimal numbers with "point" (e.g., "five point two")
+- Validates number word ordering and consistency
+- Handles both American (billion/million/thousand) and Indian (arba/crore/lakh) number systems
+- Provides detailed error messages for invalid inputs
+
+Args:
+    number_sentence (str): A string containing the textual representation of a number
+
+Returns:
+    int or float: The numeric value of the input text (float if decimal, int otherwise)
+
+Raises:
+    ValueError: For invalid inputs, with specific error messages explaining the problem
+"""
+
 
 def word_to_num(number_sentence):
     if type(number_sentence) is not str:
@@ -319,6 +373,6 @@ def word_to_num(number_sentence):
             decimal_sum = get_decimal_sum(clean_decimal_numbers)
             total_sum += decimal_sum
         except ValueError as e:
-            raise ValueError(f"Error in decimal part: {str(e)}")
+            raise ValueError(f"Error processing decimal part of '{number_sentence}': {str(e)} Please ensure decimal digits are valid words like 'one', 'two', etc.")
 
     return total_sum
