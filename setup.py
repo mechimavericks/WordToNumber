@@ -14,8 +14,14 @@ setup(
     url="https://github.com/santoshvandari/WordToNumber",
     keywords=["word to number", "number conversion", "text processing"], 
     classifiers=[
-        "Programming Language :: Python :: 3",  
+        "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",  
         "Operating System :: OS Independent", 
+        "Intended Audience :: Developers",
+        "Natural Language :: English",
+        "Development Status :: 4 - Beta",
+        "Environment :: Console",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+       
     ],
 )
